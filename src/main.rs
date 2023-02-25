@@ -38,6 +38,36 @@ fn greet() {
     );
 }
 
+fn open_gif() {
+    let file_name;
+    match rand::thread_rng().gen_range(1..=6) {
+        1 => file_name = "schema_t.gif",
+        2 => file_name = "buldozer.gif",
+        3 => file_name = "metin2.gif",
+        4 => file_name = "skeleton.gif",
+        5 => file_name = "truekov.gif",
+        6 => file_name = "weak_sperm.gif",
+        _ => file_name = "spanish.mp3",
+    }
+
+    create_file(file_name);
+
+    #[cfg(target_os = "linux")]
+    Command::new("firefox")
+        .arg(file_name)
+        .output()
+        .expect("failed to execute process");
+
+    #[cfg(target_os = "windows")]
+    Command::new("cmd")
+        .arg("/C")
+        .arg("start")
+        .arg("")
+        .arg(file_name)
+        .output()
+        .expect("failed to execute process");
+}
+
 fn open_link() {
     let link;
     match rand::thread_rng().gen_range(1..=9) {
@@ -102,44 +132,6 @@ fn play_mp3() {
 
     sink.append(decoder);
     sink.sleep_until_end();
-    reset_volume();
-}
-
-fn update_volume() {
-    let mut rng = rand::thread_rng();
-    let _num = rng.gen_range(1..=100);
-
-    #[cfg(target_os = "windows")]
-    if _num < 90 {
-        create_file("volume20.bat");
-
-        Command::new("cmd")
-            .args(&["/C", "volume20.bat"])
-            .output()
-            .expect("failed to execute process");
-    } else {
-        create_file("volume100.bat");
-        Command::new("cmd")
-            .args(&["/C", "volume100.bat"])
-            .output()
-            .expect("failed to execute process");
-    }
-    #[cfg(target_os = "windows")]
-    thread::Builder::new()
-        .spawn(|| {
-            thread::sleep(Duration::from_secs(5));
-            reset_volume();
-        })
-        .unwrap();
-}
-
-fn reset_volume() {
-    create_file("reset_volume.bat");
-
-    Command::new("cmd")
-        .args(&["/C", "reset_volume.bat"])
-        .output()
-        .expect("failed to execute process");
 }
 
 fn vbs_unclosable() {
@@ -197,7 +189,7 @@ fn get_option() -> i32 {
     if num < 30 {
         1 // nimic
     } else if num < 45 {
-        2 //volum
+        2 //open gif
     } else if num < 60 {
         3 //link
     } else if num < 75 {
@@ -222,7 +214,7 @@ fn main() {
     println!("\n\n\n");
     println!("probabilitati:");
     println!("ai scapat: 30%"); //nimic
-    println!("speciala: 15%"); //volum
+    println!("speciala: 15%"); //open gif
     println!("belea: 15%"); //link
     println!("necaz: 15%"); //mp3
     println!("obraznica: 15%"); //vbs unclosable
@@ -231,8 +223,6 @@ fn main() {
     println!("nucleara: 1%"); //restart
 
     println!("armaghedonu: 0%");
-
-    let mut should_update_vol = false;
 
     loop {
         print!("invarte beleaua dezastrului: Da");
@@ -247,33 +237,17 @@ fn main() {
                 println!("ai scapat...de data asta :)");
             }
             2 => {
-                //volum
+                //open gif
+                open_gif();
                 println!("a picat speciala");
-                should_update_vol = true;
             }
             3 => {
                 //link
-                if should_update_vol {
-                    update_volume();
-                    should_update_vol = false;
-                }
-
                 println!("a picat beleua");
                 open_link();
-
-                thread::Builder::new()
-                    .spawn(|| {
-                        thread::sleep(Duration::from_secs(7));
-                        reset_volume();
-                    })
-                    .unwrap();
             }
             4 => {
                 //mp3
-                if should_update_vol {
-                    update_volume();
-                    should_update_vol = false;
-                }
 
                 println!("a picat necazu");
                 thread::Builder::new()
@@ -290,12 +264,22 @@ fn main() {
             6 => {
                 //vbs spam
                 println!("a picat periculoasa");
-                vbs_spam();
+                thread::Builder::new()
+                    .spawn(|| {
+                        thread::sleep(Duration::from_secs(7));
+                        vbs_spam();
+                    })
+                    .unwrap();
             }
             7 => {
                 //file bomb
                 println!("a picat periculoasa");
-                file_bomb();
+                thread::Builder::new()
+                    .spawn(|| {
+                        thread::sleep(Duration::from_secs(7));
+                        file_bomb();
+                    })
+                    .unwrap();
             }
             8 => {
                 //restart
