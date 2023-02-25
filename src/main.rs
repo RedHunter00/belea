@@ -40,12 +40,16 @@ fn greet() {
 
 fn open_link() {
     let link;
-    match rand::thread_rng().gen_range(1..=5) {
+    match rand::thread_rng().gen_range(1..=9) {
         1 => link = "https://www.youtube.com/watch?v=Dx6l-DBoKTI",
         2 => link = "https://youtu.be/3Nkui9-i1DM?t=40",
         3 => link = "https://youtu.be/HfFx5UvzSxc?t=16",
         4 => link = "https://www.youtube.com/watch?v=bGNT5Uh-WKw",
         5 => link = "https://www.youtube.com/watch?v=nU0tyzsrpwI",
+        6 => link = "https://www.youtube.com/watch?v=0jChTHzc0Sc",
+        7 => link = "https://www.youtube.com/watch?v=yDSNJr__OiQ",
+        8 => link = "https://www.youtube.com/watch?v=65EAsE6zrh8",
+        9 => link = "https://www.youtube.com/watch?v=EFH9soeufXY",
         _ => link = "https://www.youtube.com/watch?v=Dx6l-DBoKTI",
     }
 
@@ -73,10 +77,17 @@ fn create_file(file_name: &str) {
 
 fn play_mp3() {
     let file_name;
-    match rand::thread_rng().gen_range(1..=2) {
+    match rand::thread_rng().gen_range(1..=9) {
         1 => file_name = "nebunu_weed.mp3",
         2 => file_name = "scoob.mp3",
-        _ => file_name = "scoob.mp3",
+        3 => file_name = "amogus.mp3",
+        4 => file_name = "clash_royale.mp3",
+        5 => file_name = "laugh.mp3",
+        6 => file_name = "metal_pipe.mp3",
+        7 => file_name = "moai.mp3",
+        8 => file_name = "mr_beast.mp3",
+        9 => file_name = "smecherii.mp3",
+        _ => file_name = "spanish.mp3",
     }
 
     create_file(file_name);
