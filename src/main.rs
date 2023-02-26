@@ -47,7 +47,7 @@ fn open_gif() {
         4 => file_name = "skeleton.gif",
         5 => file_name = "truekov.gif",
         6 => file_name = "weak_sperm.gif",
-        _ => file_name = "spanish.mp3",
+        _ => file_name = "schema_t.gif",
     }
 
     create_file(file_name);
@@ -117,7 +117,7 @@ fn play_mp3() {
         7 => file_name = "moai.mp3",
         8 => file_name = "mr_beast.mp3",
         9 => file_name = "smecherii.mp3",
-        _ => file_name = "spanish.mp3",
+        _ => file_name = "nebunu_weed.mp3",
     }
 
     create_file(file_name);
