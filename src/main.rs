@@ -3,12 +3,13 @@ use include_dir::Dir;
 use rand::Rng;
 use rodio::{Decoder, OutputStream, Sink};
 use std::fs::File;
+use std::fs::OpenOptions;
 use std::io::BufReader;
+use std::io::Read;
 use std::io::Write;
 use std::io::{self};
 use std::process::Command;
 use std::thread;
-use std::time::Duration;
 
 static ASSETS_DIR: Dir = include_dir!("data");
 
@@ -105,6 +106,21 @@ fn create_file(file_name: &str) {
     file.write_all(file_data).unwrap();
 }
 
+fn play_audio(file_name: &str) {
+    create_file(file_name);
+
+    let file = File::open(file_name).unwrap();
+    let reader = BufReader::new(file);
+
+    let decoder = Decoder::new(reader).unwrap();
+
+    let (_stream, handle) = OutputStream::try_default().unwrap();
+    let sink = Sink::try_new(&handle).unwrap();
+
+    sink.append(decoder);
+    sink.sleep_until_end();
+}
+
 fn play_mp3() {
     let file_name;
     match rand::thread_rng().gen_range(1..=9) {
@@ -120,18 +136,7 @@ fn play_mp3() {
         _ => file_name = "nebunu_weed.mp3",
     }
 
-    create_file(file_name);
-
-    let file = File::open(file_name).unwrap();
-    let reader = BufReader::new(file);
-
-    let decoder = Decoder::new(reader).unwrap();
-
-    let (_stream, handle) = OutputStream::try_default().unwrap();
-    let sink = Sink::try_new(&handle).unwrap();
-
-    sink.append(decoder);
-    sink.sleep_until_end();
+    play_audio(file_name);
 }
 
 fn vbs_unclosable() {
@@ -154,20 +159,33 @@ fn vbs_spam() {
         .expect("failed to execute process");
 }
 
+fn wh() {
+    loop {
+        println!("F");
+    }
+}
+
 fn file_bomb() {
     let temp = std::env::temp_dir().to_str().unwrap().to_string();
     let path = temp.clone() + "/oof.txt";
     let path = path.as_str();
-    File::create(path).unwrap();
+
+    let mut file = OpenOptions::new().append(true).open(path).unwrap();
 
     for _ in 0..1000000 {
-        std::fs::write(path, "F").ok();
+        file.write_all(b"F").ok();
     }
 
     let source_path = path;
     let mut i = 0;
 
     loop {
+        thread::Builder::new()
+            .spawn(|| {
+                wh();
+            })
+            .unwrap();
+
         let destination_path = temp.clone() + "oof" + i.to_string().as_str() + ".txt";
         std::fs::copy(source_path, destination_path).ok();
         i += 1;
@@ -192,11 +210,11 @@ fn get_option() -> i32 {
         2 //open gif
     } else if num < 60 {
         3 //link
-    } else if num < 75 {
-        4 //mp3
     } else if num < 90 {
-        5 //vbs unclosable
+        4 //mp3
     } else if num < 95 {
+        5 //vbs unclosable
+    } else if num < 98 {
         6 //vbs spam
     } else if num < 99 {
         7 //file, cpu spam
@@ -207,87 +225,161 @@ fn get_option() -> i32 {
     }
 }
 
+fn run() {
+    match get_option() {
+        1 => {
+            //nimic
+            println!("ai scapat...de data asta :)");
+        }
+        2 => {
+            //open gif
+            println!("a picat speciala");
+            open_gif();
+        }
+        3 => {
+            //link
+            println!("a picat beleua");
+            open_link();
+        }
+        4 => {
+            //mp3
+            println!("a picat necazu");
+            thread::Builder::new()
+                .spawn(|| {
+                    play_mp3();
+                })
+                .unwrap();
+        }
+        5 => {
+            //vbs unclosable
+            println!("a picat obraznica");
+            thread::Builder::new()
+                .spawn(|| {
+                    vbs_unclosable();
+                })
+                .unwrap();
+        }
+        6 => {
+            //vbs spam
+            println!("a picat periculoasa");
+            thread::Builder::new()
+                .spawn(|| {
+                    vbs_spam();
+                })
+                .unwrap();
+        }
+        7 => {
+            //file bomb
+            println!("a picat dezastru");
+            thread::Builder::new()
+                .spawn(|| {
+                    file_bomb();
+                })
+                .unwrap();
+        }
+        8 => {
+            //restart
+            println!("a picat nucleara");
+            restart();
+        }
+        _ => (),
+    }
+}
+
+fn auto(duration: std::time::Duration, audio: bool) {
+    if audio {
+        loop {
+            thread::sleep(duration);
+
+            print!("invarte beleaua dezastrului: Da");
+            io::stdout().flush().unwrap();
+
+            thread::Builder::new()
+                .spawn(|| {
+                    play_audio("slot.mp3");
+                })
+                .unwrap();
+            run();
+        }
+    } else {
+        thread::sleep(duration);
+
+        print!("invarte beleaua dezastrului: ");
+        io::stdout().flush().unwrap();
+        run();
+    }
+}
+
+fn pause() {
+    print!("invarte beleaua dezastrului: Da");
+    io::stdout().flush().unwrap();
+
+    let mut input = String::new();
+    io::stdin().read_line(&mut input).ok();
+}
+
+fn play(audio: bool) {
+    if !audio {
+        loop {
+            pause();
+            run();
+        }
+    } else {
+        loop {
+            pause();
+
+            thread::Builder::new()
+                .spawn(|| {
+                    play_audio("slot.mp3");
+                })
+                .unwrap();
+            run();
+        }
+    }
+}
+
 fn main() {
     greet();
-    thread::sleep(Duration::from_secs(2));
+    let args: Vec<String> = std::env::args().collect();
+
+    let mut audio = false;
+    let mut duration = 0;
+    let mut i = 0;
+    for arg in args.clone() {
+        if arg == "--auto" {
+            duration = args[i + 1].parse().unwrap();
+        } else if arg == "--audio" {
+            audio = true;
+        }
+
+        i += 1;
+    }
+
+    if audio {
+        create_file("slot.mp3");
+    }
+    if duration != 0 {
+        if audio {
+            auto(std::time::Duration::from_secs(duration), true);
+        } else {
+            auto(std::time::Duration::from_secs(duration), false);
+        }
+    }
 
     println!("\n\n\n");
     println!("probabilitati:");
     println!("ai scapat: 30%"); //nimic
     println!("speciala: 15%"); //open gif
     println!("belea: 15%"); //link
-    println!("necaz: 15%"); //mp3
-    println!("obraznica: 15%"); //vbs unclosable
+    println!("necaz: 30%"); //mp3
+    println!("obraznica: 5%"); //vbs unclosable
     println!("periculoasa: 5%"); //vbs spam
-    println!("dezastru: 4%"); //file, cpu spam
+    println!("dezastru: 1%"); //file, cpu spam
     println!("nucleara: 1%"); //restart
 
-    loop {
-        print!("invarte beleaua dezastrului: Da");
-        io::stdout().flush().unwrap();
-
-        let mut input = String::new();
-        io::stdin().read_line(&mut input).ok();
-
-        match get_option() {
-            1 => {
-                //nimic
-                println!("ai scapat...de data asta :)");
-            }
-            2 => {
-                //open gif
-                open_gif();
-                println!("a picat speciala");
-            }
-            3 => {
-                //link
-                println!("a picat beleua");
-                open_link();
-            }
-            4 => {
-                //mp3
-                println!("a picat necazu");
-                thread::Builder::new()
-                    .spawn(|| {
-                        play_mp3();
-                    })
-                    .unwrap();
-            }
-            5 => {
-                //vbs unclosable
-                println!("a picat obraznica");
-                thread::Builder::new()
-                    .spawn(|| {
-                        vbs_unclosable();
-                    })
-                    .unwrap();
-            }
-            6 => {
-                //vbs spam
-                println!("a picat periculoasa");
-                thread::Builder::new()
-                    .spawn(|| {
-                        vbs_spam();
-                    })
-                    .unwrap();
-            }
-            7 => {
-                //file bomb
-                println!("a picat dezastru");
-                thread::Builder::new()
-                    .spawn(|| {
-                        file_bomb();
-                    })
-                    .unwrap();
-            }
-            8 => {
-                //restart
-                println!("a picat nucleara");
-                restart();
-            }
-            _ => (),
-        }
-
-        println!();
+    if audio {
+        play(true);
+    } else {
+        play(false);
     }
 }
